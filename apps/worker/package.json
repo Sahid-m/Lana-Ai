@@ -1,21 +1,15 @@
 {
-  "name": "common",
+  "name": "worker",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },
-  "exports": {
-    "./middleware": "./middleware.ts",
-    "./types": "./types.ts"
-  },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/jsonwebtoken": "^9.0.9",
-    "dotenv": "^16.5.0",
-    "jsonwebtoken": "^9.0.2"
+    "@anthropic-ai/sdk": "^0.40.0"
   }
 }
