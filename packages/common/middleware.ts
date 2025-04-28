@@ -1,5 +1,8 @@
+import dotenv from "dotenv";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+
+dotenv.config();
 
 const JWT_PUBLIC_KEY = process.env.JWT_PUBLIC_KEY;
 
@@ -8,6 +11,7 @@ export function authMiddleware(
   res: Response,
   next: NextFunction
 ) {
+  console.log(JWT_PUBLIC_KEY);
   const authHeader = req.headers.authorization; // Bearer token
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -16,22 +20,27 @@ export function authMiddleware(
     return;
   }
 
-  const decoded = jwt.verify(token, JWT_PUBLIC_KEY!, {
-    algorithms: ["RS256"],
-  });
+  try {
+    const decoded = jwt.verify(token, JWT_PUBLIC_KEY ?? "asf", {
+      algorithms: ["RS256"],
+    });
 
-  if (!decoded) {
+    if (!decoded) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const userId = (decoded as any).sub;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    req.userId = userId;
+    next();
+  } catch (e) {
+    console.error(e);
     res.status(401).json({ message: "Unauthorized" });
-    return;
   }
-
-  const userId = (decoded as any).sub;
-
-  if (!userId) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  req.userId = userId;
-  next();
 }
