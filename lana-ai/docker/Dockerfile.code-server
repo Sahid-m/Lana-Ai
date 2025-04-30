@@ -97,8 +97,8 @@ EXPOSE 8080
 WORKDIR /tmp
 
 # Install VS Code extension
-RUN wget https://github.com/code100x/mobile-magic/raw/refs/heads/main/ext/bolty-listener-0.0.1.vsix
-RUN code-server --install-extension bolty-listener-0.0.1.vsix
+RUN wget https://github.com/Sahid-m/ai-smartcontract/raw/refs/heads/main/extension/lana-ai-lister-0.0.1.vsix
+RUN code-server --install-extension lana-ai-lister-0.0.1.vsix
 
 # Set permissions
 # USER root

@@ -44,7 +44,7 @@ async function ensureFileExists(filePath: string, content: string = "") {
 
 function initWs(context: vscode.ExtensionContext) {
   // change to something else
-  const ws = new WebSocket("ws://localhost:9093");
+  const ws = new WebSocket("ws://host.docker.internal:9093");
 
   ws.onerror = (e: any) => {
     console.log("error");
