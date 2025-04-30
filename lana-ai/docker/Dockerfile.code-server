@@ -1,0 +1,113 @@
+FROM codercom/code-server:4.96.4
+
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Node.js and system dependencies
+RUN apt-get update \
+    && apt-get install -y curl gnupg2 sudo git wget unzip \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install system dependencies for Rust and Anchor
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libudev-dev \
+    llvm \
+    libclang-dev \
+    protobuf-compiler \
+    libssl-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch to the non-root user
+USER coder
+
+# Install Rust
+ENV CARGO_HOME="/home/coder/.cargo"
+ENV RUSTUP_HOME="/home/coder/.rustup"
+ENV PATH="$CARGO_HOME/bin:$PATH"
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
+    && /home/coder/.cargo/bin/rustup update
+
+# Install AVM and Anchor CLI
+RUN /home/coder/.cargo/bin/cargo install --git https://github.com/coral-xyz/anchor avm \
+    && /home/coder/.cargo/bin/avm install 0.29.0 \
+    && /home/coder/.cargo/bin/avm use 0.29.0
+
+# Install Solana CLI
+ENV PATH="/home/coder/.local/share/solana/install/active_release/bin:$PATH"
+RUN curl -sSfL https://release.anza.xyz/stable/install | sh
+
+# Export Rust and AVM paths persistently
+RUN echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc \
+    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc \
+    && echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.profile
+
+# Also add Solana CLI to PATH persistently
+RUN echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc \
+    && echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.zshrc \
+    && echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
+
+# install Yarn
+RUN sudo npm i -g yarn
+
+RUN agave-install init 1.17.33
+
+RUN solana-keygen new --no-bip39-passphrase
+
+RUN git clone https://github.com/Sahid-m/anchor-bootstrap.git app/
+
+WORKDIR /home/coder/app
+
+RUN yarn 
+
+RUN /home/coder/.avm/bin/anchor-0.29.0 build
+
+
+#anchor init name;
+
+# install solana version 1.17.33
+#agave-install init 1.17.33
+
+#cargo update -p solana-program@1.18.26 --precise 1.17.33
+#change cargo.lock file version to 3
+
+#anchor build
+
+#solana-keygen new --no-bip39-passphrase
+
+# Expose code-server default port
+EXPOSE 8080
+
+# Clone and prepare template projects
+# RUN git clone https://github.com/code100x/mobile-magic.git /tmp/bolty-worker
+# RUN cp -r /tmp/bolty-worker/expo-base-app /tmp/mobile-app
+# RUN cp -r /tmp/bolty-worker/nextjs-base-app /tmp/next-app
+# RUN cp -r /tmp/bolty-worker/react-base-app /tmp/react-app
+# RUN cd /tmp/mobile-app && npm install
+# RUN cd /tmp/next-app && npm install
+
+# Workspace setup
+WORKDIR /tmp
+
+# Install VS Code extension
+RUN wget https://github.com/code100x/mobile-magic/raw/refs/heads/main/ext/bolty-listener-0.0.1.vsix
+RUN code-server --install-extension bolty-listener-0.0.1.vsix
+
+# Set permissions
+# USER root
+# RUN chown -R coder /tmp/bolty-worker /tmp/mobile-app /tmp/next-app /tmp/react-app /app
+USER coder
+
+# Set default theme
+RUN mkdir -p /home/coder/.local/share/code-server/User
+RUN echo '{"workbench.colorTheme": "Dark+", "workbench.preferredDarkColorTheme": "Dark+"}' > /home/coder/.local/share/code-server/User/settings.json
+
+# Final command
+CMD ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080", "--disable-telemetry", "/home/coder/app"]
