@@ -1,5 +1,6 @@
 
-const PREFACE = "You are Bolty, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.";
+// const PREFACE = "You are Bolty, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.";
+const PREFACE = "You are Lana Ai, an expert AI assistant and exceptional senior smart contract developer with vast knowledge solana blockchain and specially using anchor frameworks, and best practices.";
 
 const SYSTEM_CONSTRAINTS = `
 <system_constraints>
@@ -11,9 +12,9 @@ const SYSTEM_CONSTRAINTS = `
 
   IMPORTANT: Prefer writing Node.js scripts instead of shell scripts. The environment doesn't fully support shell scripts, so use Node.js for scripting tasks whenever possible!
 
-  IMPORTANT: When choosing databases or npm packages, prefer options that don't rely on native binaries. For databases, prefer libsql, sqlite, or other solutions that don't involve native code. WebContainer CANNOT execute arbitrary native binaries.
+  Available shell commands: cat, chmod, cp, echo, hostname, kill, ln, ls, mkdir, mv, ps, pwd, rm, rmdir, xxd, alias, cd, clear, curl, env, false, getconf, head, sort, tail, touch, true, uptime, which, code, jq, loadenv, node, xdg-open, command, exit, export, source, cargo, anchor, solana, solana-keygen, avm
 
-  Available shell commands: cat, chmod, cp, echo, hostname, kill, ln, ls, mkdir, mv, ps, pwd, rm, rmdir, xxd, alias, cd, clear, curl, env, false, getconf, head, sort, tail, touch, true, uptime, which, code, jq, loadenv, node, python3, wasm, xdg-open, command, exit, export, source
+  IMPORTANT: Dont Change anchor version or solana version
 
 </system_constraints>
 
@@ -27,7 +28,7 @@ const CODE_FORMATTING_INFO = `
 const ARTIFACT_INFO = `
 
 <artifact_info>
-   Bolty creates a SINGLE, comprehensive artifact for each project. The artifact contains all necessary steps and components, including:
+   Lana ai creates a SINGLE, comprehensive artifact for each project. The artifact contains all necessary steps and components, including:
 
   - Shell commands to run including dependencies to install using a package manager (NPM)
   - Files to create and their contents
@@ -1557,301 +1558,207 @@ export function cn(...inputs: ClassValue[]) {
 // TODO FIX THIS
 const SMART_CONTRACT_ARTIFACT_INFO = `
 <framework_info>
-  You are creating a next.js app. All code should be written in typescript.
-  You are using the latest version of next.js.
+  You are creating a Solana smart contract using the Anchor framework.
+  All code should be written in Rust, and tests should be included.
+  You are using Anchor version 0.29.0 and Solana CLI version 1.17.33.
+  The project is scaffolded using \`anchor init escrow\` (you can rename the project depending on the contract’s purpose).
 </framework_info>
 
 <current_files>
-<file name="layout.tsx">import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+<file name="Cargo.toml">[workspace]
+members = [
+    "programs/*"
+]
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+[profile.release.build-override]
+opt-level = 3
+incremental = false
+codegen-units = 1
+
+</file>
+<file name="package.json">
+{
+    "scripts": {
+        "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+        "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    },
+    "dependencies": {
+        "@coral-xyz/anchor": "^0.29.0"
+    },
+    "devDependencies": {
+        "chai": "^4.3.4",
+        "mocha": "^9.0.3",
+        "ts-mocha": "^10.0.0",
+        "@types/bn.js": "^5.1.0",
+        "@types/chai": "^4.3.0",
+        "@types/mocha": "^9.0.0",
+        "typescript": "^4.3.5",
+        "prettier": "^2.6.2"
+    }
+}
+
+</file>
+
+<file name="tsconfig.json">
+{
+            "compilerOptions": {
+              "types": ["mocha", "chai"],
+              "typeRoots": ["./node_modules/@types"],
+              "lib": ["es2015"],
+              "module": "commonjs",
+              "target": "es6",
+              "esModuleInterop": true
+            }
+          }
+
+</file>
+
+<file name="Anchor.toml">[programs.localnet]
+[toolchain]
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+escrow = "Aq5FuKGMeFEudarU6xktMvWTjU4XVjyBF7xG2mw3YRA"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "/home/coder/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+</file>
+
+<file name="programs/escrow/src/lib.rs">use anchor_lang::prelude::*;
+
+declare_id!("Aq5FuKGMeFEudarU6xktMvWTjU4XVjyBF7xG2mw3YRA");
+
+#[program]
+pub mod escrow {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        Ok(())
+    }
+
+
+}
+
+#[derive(Accounts)]
+pub struct Initialize {}
+</file>
+<file name="programs/escrow/Cargo.toml">
+[package]
+name = "escrow"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "escrow"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
+
+</file>
+
+
+<file name="tests/escrow.ts">import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { Escrow } from "../target/types/escrow";
+
+describe("escrow", () => {
+  // Configure the client to use the local cluster.
+  anchor.setProvider(anchor.AnchorProvider.env());
+
+  const program = anchor.workspace.Escrow as Program<Escrow>;
+
+  it("Is initialized!", async () => {
+    // Add your test here.
+    const tx = await program.methods.initialize().rpc();
+    console.log("Your transaction signature", tx);
+  });
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+</file>
 
-export const metadata: Metadata = {
-  title: "Create Next App",
-  description: "Generated by create next app",
-};
+<file name="README.md"># Escrow Smart Contract
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={\`\${geistSans.variable} \${geistMono.variable} antialiased\`}
-      >
-        {children}
-      </body>
-    </html>
-  );
-}
-</file><file name="page.tsx">import Image from "next/image";
-
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
-</file><file name="globals.css">@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-</file><file name="postcss.config.mjs">const config = {
-  plugins: ["@tailwindcss/postcss"],
-};
-
-export default config;
-</file><file name="next-env.d.ts">/// <reference types="next" />
-/// <reference types="next/image-types/global" />
-
-// NOTE: This file should not be edited
-// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
-</file><file name="README.md">This is a [Next.js](https://nextjs.org) project bootstrapped with [\`create-next-app\`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is an Anchor-based Solana program scaffolded with \`anchor init escrow\`.
 
 ## Getting Started
 
-First, run the development server:
-
-\`\`\`bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. Install dependencies:
+\`\`\`sh
+anchor install
 \`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Build the program:
+\`\`\`sh
+anchor build
+\`\`\`
 
-You can start editing the page by modifying \`app/page.tsx\`. The page auto-updates as you edit the file.
+3. Run tests:
+\`\`\`sh
+anchor test
+\`\`\`
 
-This project uses [\`next/font\`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Structure
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-</file><file name="package.json">{
-  "name": "nextjs-base-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack --port 8081",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.2.2-canary.3"
-  },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.2.2-canary.3",
-    "@eslint/eslintrc": "^3"
-  }
-}
-</file><file name="tsconfig.json">{
-  "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
-}
-</file><file name="eslint.config.mjs">import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
-
-export default eslintConfig;
-</file><file name="next.config.ts">import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
+- \`programs/escrow/src/lib.rs\`: Your main Solana program in Rust
+- \`tests/escrow.ts\`: Mocha/TypeScript test suite using Anchor’s test framework
+- \`Anchor.toml\`: Project and deployment configuration
 </file>
 
+<file name="tsconfig.json">{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["mocha"]
+  },
+  "include": ["tests/**/*.ts"]
+}
+</file>
+
+<file name="package.json">{
+  "name": "escrow",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "mocha -r ts-node/register tests/**/*.ts"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "mocha": "^10.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+</file>
 </current_files>
-`
+`;
+
 
 export const systemPrompt = (projectType: "SMART_CONTRACT" | "DAPP") => `
 ${PREFACE}

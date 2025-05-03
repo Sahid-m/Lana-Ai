@@ -1,7 +1,6 @@
 "use client";
 
 import { Header } from "@/components/header";
-import { PreviewIframe } from "@/components/previewIframe";
 import { Button } from "@/components/ui/button";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,7 +55,7 @@ export const Project: React.FC<{ projectId: string, sessionUrl: string, previewU
                                 {prompts.filter((prompt) => prompt.type === "USER").map((prompt) => (
                                     <div key={prompt.id}>
                                         <span key={prompt.id} className="flex text-lg gap-2">
-                                            <Image src={user?.imageUrl || ""} width={10} height={10} alt="Profile picture" className="rounded-full w-6 h-6" />
+                                            <img src={user?.imageUrl || ""} width={10} height={10} alt="Profile picture" className="rounded-full w-6 h-6" />
                                             {prompt.content}
                                         </span>
                                         {prompt.actions.map((action) => (

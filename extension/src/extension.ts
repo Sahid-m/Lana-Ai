@@ -2,6 +2,10 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { WebSocket } from "ws";
 
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 type AdminMessage = {
   type: "command" | "update-file" | "prompt-start" | "prompt-end";
   content: string;
@@ -13,6 +17,18 @@ type VscodeMessagePayload = {
   event: "vscode_diff";
   diff: string;
 };
+
+async function getGitDiff(): Promise<string> {
+  try {
+    const { stdout } = await execAsync("git diff", {
+      cwd: vscode.workspace.workspaceFolders?.[0].uri.fsPath,
+    });
+    return stdout;
+  } catch (err) {
+    console.error("Git diff failed:", err);
+    return "";
+  }
+}
 
 async function ensureFileExists(filePath: string, content: string = "") {
   try {
@@ -66,6 +82,7 @@ function initWs(context: vscode.ExtensionContext) {
     console.log("data");
     console.log(data);
     if (data.type === "command") {
+      vscode.window.showInformationMessage("Received command event");
       vscode.commands.executeCommand(
         "extension.sendToAiTerminal",
         data.content
@@ -73,6 +90,7 @@ function initWs(context: vscode.ExtensionContext) {
     }
 
     if (data.type === "update-file") {
+      vscode.window.showInformationMessage("Received update-file event");
       const fileUri = await ensureFileExists(data.path!, data.content);
 
       const document = await vscode.workspace.openTextDocument(fileUri);
@@ -89,20 +107,30 @@ function initWs(context: vscode.ExtensionContext) {
     }
 
     if (data.type === "prompt-start") {
+      vscode.window.showInformationMessage("Received prompt-start event");
       const terminals = vscode.window.terminals;
       if (terminals.length > 0) {
         const activeTerminal = vscode.window.activeTerminal;
         activeTerminal?.sendText("\x03");
       }
       // get response from git diff command silently and forward it via ws to the server
-      const diff = await vscode.commands.executeCommand("git diff");
-      ws.send(
-        JSON.stringify({
-          event: "vscode_diff",
-          diff: diff,
-          callbackId: data.callbackId,
-        })
-      );
+      try {
+        const diff = await getGitDiff(); // Replace with exec-based implementation
+        vscode.window.showInformationMessage(`Git diff length: ${diff.length}`);
+
+        ws.send(
+          JSON.stringify({
+            event: "vscode_diff",
+            diff,
+            callbackId: data.callbackId,
+          })
+        );
+
+        vscode.window.showInformationMessage("Sent diff over WebSocket");
+      } catch (err) {
+        vscode.window.showErrorMessage("Failed to get diff or send over WS");
+        console.error(err);
+      }
     }
 
     if (data.type === "prompt-end") {

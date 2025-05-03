@@ -94,7 +94,7 @@ EXPOSE 8080
 # RUN cd /tmp/next-app && npm install
 
 # Workspace setup
-WORKDIR /tmp
+WORKDIR /tmp/ext
 
 # Install VS Code extension
 RUN wget https://github.com/Sahid-m/ai-smartcontract/raw/refs/heads/main/extension/lana-ai-lister-0.0.1.vsix

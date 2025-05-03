@@ -19,6 +19,8 @@ Bun.serve({
   websocket: {
     message(ws, message) {
       const { event, data }: MessagePayload = JSON.parse(message.toString());
+
+      console.log(message.toString());
       if (event === "subscribe") {
         SUBSCRIPTIONS.push(ws);
         if (bufferedMessages.length) {
@@ -32,10 +34,13 @@ Bun.serve({
           bufferedMessages.push(data);
         } else {
           SUBSCRIPTIONS.forEach((ws) => ws.send(JSON.stringify(data)));
+          console.log("sent thingssss to vs code");
         }
       } else if (event === "api_subscribe") {
+        console.log("api sub req rec");
         API_SUBSCRIPTIONS.push(ws);
-      } else if (event === "vscode") {
+      } else if (event === "vscode_diff") {
+        console.log("recirved vscode things");
         API_SUBSCRIPTIONS.forEach((ws) => ws.send(JSON.stringify(data)));
       }
     },

@@ -25,10 +25,25 @@ export class RelayWebsocket {
     };
   }
 
+  private waitForOpen(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.ws.readyState === WebSocket.OPEN) return resolve();
+      if (this.ws.readyState !== WebSocket.CONNECTING)
+        return reject(new Error("WebSocket is not connecting"));
+
+      this.ws.addEventListener("open", () => resolve(), { once: true });
+      this.ws.addEventListener(
+        "error",
+        () => reject(new Error("WebSocket failed to open")),
+        { once: true }
+      );
+    });
+  }
+
   static getInstance() {
     if (!RelayWebsocket.instance) {
       RelayWebsocket.instance = new RelayWebsocket(
-        process.env.WS_RELAYER_URL || "ws://ws-relayer:9093"
+        process.env.WS_RELAYER_URL || "ws://localhost:9093"
       );
     }
     return RelayWebsocket.instance;
@@ -38,12 +53,16 @@ export class RelayWebsocket {
     this.ws.send(message);
   }
 
-  sendAndAwaitResponse(
+  async sendAndAwaitResponse(
     message: any,
     callbackId: string
   ): Promise<VscodeMessagePayload> {
-    this.ws.send(JSON.stringify({ ...message, callbackId }));
+    console.log("reached before open");
+    await this.waitForOpen();
 
+    console.log("reached after open");
+    this.ws.send(JSON.stringify({ ...message, callbackId }));
+    console.log("reached after send");
     return new Promise((resolve, reject) => {
       this.callbacks.set(callbackId, resolve);
     });
