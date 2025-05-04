@@ -11,6 +11,7 @@ type AdminMessage = {
   content: string;
   path?: string;
   callbackId?: string;
+  p_name?: string;
 };
 
 type VscodeMessagePayload = {
@@ -26,6 +27,46 @@ async function getGitDiff(): Promise<string> {
     return stdout;
   } catch (err) {
     console.error("Git diff failed:", err);
+    return "";
+  }
+}
+
+async function getPubKey(): Promise<string> {
+  try {
+    const { stdout } = await execAsync("anchor keys list", {
+      cwd: vscode.workspace.workspaceFolders?.[0].uri.fsPath,
+    });
+    return stdout;
+  } catch (err) {
+    console.error("pub key failed:", err);
+    return "";
+  }
+}
+
+async function runInitAndRestructure(name: string): Promise<string> {
+  const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  if (!cwd) {
+    console.error("No workspace folder found.");
+    return "";
+  }
+
+  try {
+    // Step 1: Initialize the Anchor project
+    await execAsync(`anchor init ${name}`, { cwd });
+
+    // Step 2: Move files (including hidden ones) up and remove the folder
+    const moveScript = `
+      shopt -s dotglob;
+      mv ${name}/* ${name}/.* . 2>/dev/null;
+      rmdir ${name};
+      git add .;
+      shopt -u dotglob;
+    `;
+    const { stdout } = await execAsync(moveScript, { cwd });
+
+    return stdout;
+  } catch (err) {
+    console.error("Anchor init and restructure failed:", err);
     return "";
   }
 }
@@ -118,11 +159,19 @@ function initWs(context: vscode.ExtensionContext) {
         const diff = await getGitDiff(); // Replace with exec-based implementation
         vscode.window.showInformationMessage(`Git diff length: ${diff.length}`);
 
+        const ans = await runInitAndRestructure(data.p_name!);
+        vscode.window.showInformationMessage(
+          `anchor project initiated ${ans.length}`
+        );
+
+        const pubKey = await getPubKey();
+
         ws.send(
           JSON.stringify({
             event: "vscode_diff",
             diff,
             callbackId: data.callbackId,
+            pubkey: pubKey,
           })
         );
 
