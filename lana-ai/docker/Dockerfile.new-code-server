@@ -40,12 +40,18 @@ RUN echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PAT
 
 RUN source ~/.bashrc
 
+RUN export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH" && solana-keygen new --no-bip39-passphrase
+WORKDIR /tmp/ext
 
-
+# Install VS Code extension
+RUN wget https://github.com/Sahid-m/ai-smartcontract/raw/refs/heads/main/extension/lana-ai-lister-0.0.1.vsix
+RUN code-server --install-extension lana-ai-lister-0.0.1.vsix
 
 # Set code-server dark theme and bash as default terminal
 RUN mkdir -p /home/coder/.local/share/code-server/User
 RUN echo '{"workbench.colorTheme": "Dark+", "workbench.preferredDarkColorTheme": "Dark+"}' > /home/coder/.local/share/code-server/User/settings.json
+
+RUN mkdir app
 
 # Expose code-server port
 EXPOSE 8080
