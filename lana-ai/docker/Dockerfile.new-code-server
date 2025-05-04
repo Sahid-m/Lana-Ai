@@ -1,0 +1,54 @@
+FROM ubuntu:25.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install essential packages and Node.js 22
+RUN apt-get update && apt-get install -y \
+    sudo \
+    curl \
+    wget \
+    gnupg \
+    ca-certificates \
+    git \
+    build-essential \
+    libssl-dev \
+    bash \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get update && apt-get install -y nodejs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Create a new user "coder" with home directory and give sudo privileges
+RUN useradd -m -s /bin/bash coder \
+    && usermod -aG sudo coder \
+    && echo "coder ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && chsh -s /bin/bash coder \
+    && rm -f /bin/sh && ln -s /bin/bash /bin/sh
+
+# Switch to coder user
+USER coder
+WORKDIR /home/coder
+
+# Install code-server
+RUN curl -fsSL https://code-server.dev/install.sh | bash
+
+RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+
+
+RUN echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc \
+    && echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.zshrc \
+    && echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
+
+RUN source ~/.bashrc
+
+
+
+
+# Set code-server dark theme and bash as default terminal
+RUN mkdir -p /home/coder/.local/share/code-server/User
+RUN echo '{"workbench.colorTheme": "Dark+", "workbench.preferredDarkColorTheme": "Dark+"}' > /home/coder/.local/share/code-server/User/settings.json
+
+# Expose code-server port
+EXPOSE 8080
+
+# Start code-server on container launch
+CMD ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080", "--disable-telemetry", "/home/coder"]

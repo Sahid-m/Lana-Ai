@@ -9,6 +9,7 @@ export class RelayWebsocket {
     this.ws = new WebSocket(url);
     this.callbacks = new Map();
     this.ws.onmessage = (event) => {
+      console.log(event);
       const { callbackId, ...data } = JSON.parse(event.data);
       const callback = this.callbacks.get(callbackId);
       if (callback) {
@@ -53,18 +54,21 @@ export class RelayWebsocket {
     this.ws.send(message);
   }
 
-  async sendAndAwaitResponse(
-    message: any,
-    callbackId: string
-  ): Promise<VscodeMessagePayload> {
+  async sendAndAwaitResponse(message: {
+    event: string;
+    data: {
+      type: string;
+      callbackId: string;
+    };
+  }): Promise<VscodeMessagePayload> {
     console.log("reached before open");
     await this.waitForOpen();
 
     console.log("reached after open");
-    this.ws.send(JSON.stringify({ ...message, callbackId }));
+    this.ws.send(JSON.stringify({ ...message }));
     console.log("reached after send");
     return new Promise((resolve, reject) => {
-      this.callbacks.set(callbackId, resolve);
+      this.callbacks.set(message.data.callbackId, resolve);
     });
   }
 }

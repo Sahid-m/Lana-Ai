@@ -3,7 +3,7 @@ import { RelayWebsocket } from "./ws";
 
 function getBaseWorkerDir(type: "SMART_CONTRACT" | "DAPP") {
   if (type === "SMART_CONTRACT") {
-    return "/tmp/smart-contract";
+    return "/home/coder/app";
   }
   return "/tmp/dapp";
 }

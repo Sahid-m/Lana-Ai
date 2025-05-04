@@ -1562,10 +1562,11 @@ const SMART_CONTRACT_ARTIFACT_INFO = `
   All code should be written in Rust, and tests should be included.
   You are using Anchor version 0.29.0 and Solana CLI version 1.17.33.
   The project is scaffolded using \`anchor init escrow\` (you can rename the project depending on the contract’s purpose).
-</framework_info>
+  IMPORTANT: use yarn as package manager and specify packages version that are compitable with anchor version 0.29.0 and solana cli 1.17.33
+  </framework_info>
 
 <current_files>
-<file name="Cargo.toml">[workspace]
+<file name="/home/coder/app/Cargo.toml">[workspace]
 members = [
     "programs/*"
 ]
@@ -1580,7 +1581,7 @@ incremental = false
 codegen-units = 1
 
 </file>
-<file name="package.json">
+<file name="/home/coder/app/package.json">
 {
     "scripts": {
         "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
@@ -1603,7 +1604,7 @@ codegen-units = 1
 
 </file>
 
-<file name="tsconfig.json">
+<file name="/home/coder/app/tsconfig.json">
 {
             "compilerOptions": {
               "types": ["mocha", "chai"],
@@ -1617,7 +1618,7 @@ codegen-units = 1
 
 </file>
 
-<file name="Anchor.toml">[programs.localnet]
+<file name="/home/coder/app/Anchor.toml">[programs.localnet]
 [toolchain]
 
 [features]
@@ -1657,7 +1658,7 @@ pub mod escrow {
 #[derive(Accounts)]
 pub struct Initialize {}
 </file>
-<file name="programs/escrow/Cargo.toml">
+<file name="/home/coder/app/programs/escrow/Cargo.toml">
 [package]
 name = "escrow"
 version = "0.1.0"
@@ -1681,7 +1682,7 @@ anchor-lang = "0.29.0"
 </file>
 
 
-<file name="tests/escrow.ts">import * as anchor from "@coral-xyz/anchor";
+<file name="/home/coder/app/tests/escrow.ts">import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Escrow } from "../target/types/escrow";
 
@@ -1700,7 +1701,7 @@ describe("escrow", () => {
 
 </file>
 
-<file name="README.md"># Escrow Smart Contract
+<file name="/home/coder/app/README.md"># Escrow Smart Contract
 
 This is an Anchor-based Solana program scaffolded with \`anchor init escrow\`.
 
@@ -1742,7 +1743,7 @@ anchor test
 }
 </file>
 
-<file name="package.json">{
+<file name="/home/coder/app/package.json">{
   "name": "escrow",
   "version": "0.1.0",
   "scripts": {

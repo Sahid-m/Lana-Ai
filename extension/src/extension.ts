@@ -137,7 +137,7 @@ function initWs(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand("git add .");
       vscode.commands.executeCommand(
         "extension.sendToAiTerminal",
-        "npm run dev"
+        "anchor build"
       );
     }
   };

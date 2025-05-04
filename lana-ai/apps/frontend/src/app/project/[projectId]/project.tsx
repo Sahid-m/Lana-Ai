@@ -8,12 +8,11 @@ import { usePrompts } from "@/hooks/usePrompts";
 import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { MoveUpRight, SquarePen } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 // session url -> Docker container url 
-export const Project: React.FC<{ projectId: string, sessionUrl: string, previewUrl?: string, workerUrl: string }> = ({ projectId, sessionUrl, previewUrl, workerUrl }) => {
+export const Project: React.FC<{ projectId: string, sessionUrl: string, previewUrl?: string, workerUrl: string }> = ({ projectId, sessionUrl, workerUrl }) => {
     const router = useRouter()
     const { prompts } = usePrompts(projectId);
     const [prompt, setPrompt] = useState("");

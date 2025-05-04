@@ -18,10 +18,10 @@ Bun.serve({
   },
   websocket: {
     message(ws, message) {
-      const { event, data }: MessagePayload = JSON.parse(message.toString());
+      const IncData: MessagePayload = JSON.parse(message.toString());
 
       console.log(message.toString());
-      if (event === "subscribe") {
+      if (IncData.event === "subscribe") {
         SUBSCRIPTIONS.push(ws);
         if (bufferedMessages.length) {
           SUBSCRIPTIONS.forEach((ws) =>
@@ -29,19 +29,20 @@ Bun.serve({
           );
           bufferedMessages = [];
         }
-      } else if (event === "admin") {
+      } else if (IncData.event === "admin") {
+        const data = IncData.data;
         if (!SUBSCRIPTIONS.length) {
           bufferedMessages.push(data);
         } else {
           SUBSCRIPTIONS.forEach((ws) => ws.send(JSON.stringify(data)));
           console.log("sent thingssss to vs code");
         }
-      } else if (event === "api_subscribe") {
+      } else if (IncData.event === "api_subscribe") {
         console.log("api sub req rec");
         API_SUBSCRIPTIONS.push(ws);
-      } else if (event === "vscode_diff") {
+      } else if (IncData.event === "vscode_diff") {
         console.log("recirved vscode things");
-        API_SUBSCRIPTIONS.forEach((ws) => ws.send(JSON.stringify(data)));
+        API_SUBSCRIPTIONS.forEach((ws) => ws.send(JSON.stringify(IncData)));
       }
     },
     open(ws) {

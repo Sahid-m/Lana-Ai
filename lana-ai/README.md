@@ -7,7 +7,7 @@ This Turborepo starter is maintained by the Turborepo core team.
 Run the following command:
 
 ```sh
-npx create-turbo@latest
+docker run -p 5432:5432 -d -e POSTGRES_PASSWORD=mysupersecretpassword postgres
 ```
 
 ## What's inside?

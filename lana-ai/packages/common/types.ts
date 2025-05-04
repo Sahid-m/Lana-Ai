@@ -11,6 +11,15 @@ export type MessagePayload =
         path?: string;
       };
       callbackId?: string;
+    }
+  | {
+      event: "vscode_diff";
+      diff: string;
+      callbackId: string;
+    }
+  | {
+      event: "api_subscribe";
+      data?: null;
     };
 
 export type VscodeMessagePayload = {
