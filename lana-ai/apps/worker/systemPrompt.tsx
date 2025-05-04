@@ -1556,13 +1556,17 @@ export function cn(...inputs: ClassValue[]) {
 
 
 // TODO FIX THIS
-const SMART_CONTRACT_ARTIFACT_INFO = `
+const SMART_CONTRACT_ARTIFACT_INFO = (pubkey: string) => `
 <framework_info>
   You are creating a Solana smart contract using the Anchor framework.
   All code should be written in Rust, and tests should be included.
-  You are using Anchor version 0.29.0 and Solana CLI version 1.17.33.
-  The project is scaffolded using \`anchor init escrow\` (you can rename the project depending on the contract’s purpose).
-  IMPORTANT: use yarn as package manager and specify packages version that are compitable with anchor version 0.29.0 and solana cli 1.17.33
+  You are using latest Anchor with avm installed and Solana CLI latest version. 
+  The project is scaffolded using \`anchor init app\` (you can rename the project depending on the contract’s purpose).
+  whenever you use commands make sure to cd into app first.
+  IMPORTANT: use yarn as package manager
+  IMPORTANT: MAKE SURE THE PUBLIC KEY REMAINS SAME
+  IMPORTANT: use different files if necessary and divide the code to make it better if the code is big
+  IMPORTANT: Make sure to not have syntax errors and make sure to send commands to install external package.
   </framework_info>
 
 <current_files>
@@ -1570,6 +1574,7 @@ const SMART_CONTRACT_ARTIFACT_INFO = `
 members = [
     "programs/*"
 ]
+resolver = "2"
 
 [profile.release]
 overflow-checks = true
@@ -1583,66 +1588,64 @@ codegen-units = 1
 </file>
 <file name="/home/coder/app/package.json">
 {
-    "scripts": {
-        "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-        "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
-    },
-    "dependencies": {
-        "@coral-xyz/anchor": "^0.29.0"
-    },
-    "devDependencies": {
-        "chai": "^4.3.4",
-        "mocha": "^9.0.3",
-        "ts-mocha": "^10.0.0",
-        "@types/bn.js": "^5.1.0",
-        "@types/chai": "^4.3.0",
-        "@types/mocha": "^9.0.0",
-        "typescript": "^4.3.5",
-        "prettier": "^2.6.2"
-    }
+  "license": "ISC",
+  "scripts": {
+    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.0.3",
+    "ts-mocha": "^10.0.0",
+    "@types/bn.js": "^5.1.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.0.0",
+    "typescript": "^5.7.3",
+    "prettier": "^2.6.2"
+  }
 }
-
 </file>
 
 <file name="/home/coder/app/tsconfig.json">
 {
-            "compilerOptions": {
-              "types": ["mocha", "chai"],
-              "typeRoots": ["./node_modules/@types"],
-              "lib": ["es2015"],
-              "module": "commonjs",
-              "target": "es6",
-              "esModuleInterop": true
-            }
-          }
-
+  "compilerOptions": {
+    "types": ["mocha", "chai"],
+    "typeRoots": ["./node_modules/@types"],
+    "lib": ["es2015"],
+    "module": "commonjs",
+    "target": "es6",
+    "esModuleInterop": true
+  }
+}
 </file>
 
-<file name="/home/coder/app/Anchor.toml">[programs.localnet]
-[toolchain]
+<file name="/home/coder/app/Anchor.toml">[toolchain]
+package_manager = "yarn"
 
 [features]
-seeds = false
+resolution = true
 skip-lint = false
 
 [programs.localnet]
-escrow = "Aq5FuKGMeFEudarU6xktMvWTjU4XVjyBF7xG2mw3YRA"
+contract = ${pubkey}
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
-wallet = "/home/coder/.config/solana/id.json"
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
-
 </file>
 
-<file name="programs/escrow/src/lib.rs">use anchor_lang::prelude::*;
+<file name="programs/contract/src/lib.rs">use anchor_lang::prelude::*;
 
-declare_id!("Aq5FuKGMeFEudarU6xktMvWTjU4XVjyBF7xG2mw3YRA");
+declare_id!(${pubkey});
 
 #[program]
 pub mod escrow {
@@ -1658,39 +1661,40 @@ pub mod escrow {
 #[derive(Accounts)]
 pub struct Initialize {}
 </file>
-<file name="/home/coder/app/programs/escrow/Cargo.toml">
+<file name="/home/coder/app/programs/contract/Cargo.toml">
 [package]
-name = "escrow"
+name = "contract"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "escrow"
+name = "contract"
 
 [features]
+default = []
+cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
-cpi = ["no-entrypoint"]
-default = []
+idl-build = ["anchor-lang/idl-build"]
+
 
 [dependencies]
-anchor-lang = "0.29.0"
-
+anchor-lang = "0.31.1"
 </file>
 
 
-<file name="/home/coder/app/tests/escrow.ts">import * as anchor from "@coral-xyz/anchor";
+<file name="/home/coder/app/tests/contract.ts">import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { Escrow } from "../target/types/escrow";
+import { contract } from "../target/types/contract";
 
-describe("escrow", () => {
+describe("contract", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.Escrow as Program<Escrow>;
+  const program = anchor.workspace.contract as Program<Contract>;
 
   it("Is initialized!", async () => {
     // Add your test here.
@@ -1698,70 +1702,26 @@ describe("escrow", () => {
     console.log("Your transaction signature", tx);
   });
 });
-
 </file>
+<file name="/home/coder/app/migrations/deploy.ts">
+// Migrations are an early feature. Currently, they're nothing more than this
+// single deploy script that's invoked from the CLI, injecting a provider
+// configured from the workspace's Anchor.toml.
 
-<file name="/home/coder/app/README.md"># Escrow Smart Contract
+import * as anchor from "@coral-xyz/anchor";
 
-This is an Anchor-based Solana program scaffolded with \`anchor init escrow\`.
+module.exports = async function (provider: anchor.AnchorProvider) {
+  // Configure client to use the provider.
+  anchor.setProvider(provider);
 
-## Getting Started
-
-1. Install dependencies:
-\`\`\`sh
-anchor install
-\`\`\`
-
-2. Build the program:
-\`\`\`sh
-anchor build
-\`\`\`
-
-3. Run tests:
-\`\`\`sh
-anchor test
-\`\`\`
-
-## Structure
-
-- \`programs/escrow/src/lib.rs\`: Your main Solana program in Rust
-- \`tests/escrow.ts\`: Mocha/TypeScript test suite using Anchor’s test framework
-- \`Anchor.toml\`: Project and deployment configuration
-</file>
-
-<file name="tsconfig.json">{
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["mocha"]
-  },
-  "include": ["tests/**/*.ts"]
-}
-</file>
-
-<file name="/home/coder/app/package.json">{
-  "name": "escrow",
-  "version": "0.1.0",
-  "scripts": {
-    "test": "mocha -r ts-node/register tests/**/*.ts"
-  },
-  "devDependencies": {
-    "@coral-xyz/anchor": "^0.29.0",
-    "mocha": "^10.0.0",
-    "ts-node": "^10.0.0",
-    "typescript": "^5.0.0"
-  }
-}
+  // Add your deploy script here.
+};
 </file>
 </current_files>
 `;
 
 
-export const systemPrompt = (projectType: "SMART_CONTRACT" | "DAPP") => `
+export const systemPrompt = (projectType: "SMART_CONTRACT" | "DAPP", pubkey: string) => `
 ${PREFACE}
 
 ${SYSTEM_CONSTRAINTS}
@@ -1770,5 +1730,5 @@ ${CODE_FORMATTING_INFO}
 
 ${ARTIFACT_INFO}
 
-${projectType === "SMART_CONTRACT" ? SMART_CONTRACT_ARTIFACT_INFO : DAPP_ARTIFACT_INFO}
+${projectType === "SMART_CONTRACT" ? SMART_CONTRACT_ARTIFACT_INFO(pubkey) : DAPP_ARTIFACT_INFO}
 `;

@@ -14,6 +14,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+function extractPubkey(input: string): string | null {
+  const match = input.match(/contract:\s*([1-9A-HJ-NP-Za-km-z]{32,})/);
+  return match ? match[1]! : null;
+}
+
 app.post("/prompt", async (req, res) => {
   const { prompt, projectId } = req.body;
   const client = new Anthropic();
@@ -37,13 +42,17 @@ app.post("/prompt", async (req, res) => {
     },
   });
 
-  const { diff } = await RelayWebsocket.getInstance().sendAndAwaitResponse({
-    event: "admin",
-    data: {
-      type: "prompt-start",
-      callbackId: promptDb.id,
-    },
-  });
+  const { diff, pubkey } =
+    await RelayWebsocket.getInstance().sendAndAwaitResponse({
+      event: "admin",
+      data: {
+        type: "prompt-start",
+        callbackId: promptDb.id,
+        p_name: "contract",
+      },
+    });
+
+  const fpubkey = extractPubkey(pubkey);
 
   console.log("after diff");
 
@@ -149,7 +158,7 @@ app.post("/prompt", async (req, res) => {
         role: p.type === "USER" ? "user" : "assistant",
         content: p.content,
       })),
-      system: systemPrompt(project.type),
+      system: systemPrompt(project.type, fpubkey!),
       model: "claude-3-7-sonnet-20250219",
       max_tokens: 8000,
     })

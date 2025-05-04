@@ -59,6 +59,7 @@ export class RelayWebsocket {
     data: {
       type: string;
       callbackId: string;
+      p_name?: string;
     };
   }): Promise<VscodeMessagePayload> {
     console.log("reached before open");

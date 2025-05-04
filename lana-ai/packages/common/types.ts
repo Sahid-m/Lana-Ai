@@ -16,6 +16,7 @@ export type MessagePayload =
       event: "vscode_diff";
       diff: string;
       callbackId: string;
+      pubkey: string;
     }
   | {
       event: "api_subscribe";
@@ -26,4 +27,5 @@ export type VscodeMessagePayload = {
   event: "vscode_diff";
   diff: string;
   callbackId: string;
+  pubkey: string;
 };

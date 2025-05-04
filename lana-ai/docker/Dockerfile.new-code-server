@@ -41,6 +41,9 @@ RUN echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PAT
 RUN source ~/.bashrc
 
 RUN export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH" && solana-keygen new --no-bip39-passphrase
+
+RUN source ~/.bashrc
+
 WORKDIR /tmp/ext
 
 # Install VS Code extension
@@ -51,10 +54,10 @@ RUN code-server --install-extension lana-ai-lister-0.0.1.vsix
 RUN mkdir -p /home/coder/.local/share/code-server/User
 RUN echo '{"workbench.colorTheme": "Dark+", "workbench.preferredDarkColorTheme": "Dark+"}' > /home/coder/.local/share/code-server/User/settings.json
 
-RUN mkdir app
+RUN mkdir /home/coder/app
 
 # Expose code-server port
 EXPOSE 8080
 
 # Start code-server on container launch
-CMD ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080", "--disable-telemetry", "/home/coder"]
+CMD ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080", "--disable-telemetry", "/home/coder/app"]
