@@ -1562,11 +1562,11 @@ const SMART_CONTRACT_ARTIFACT_INFO = (pubkey: string) => `
   All code should be written in Rust, and tests should be included.
   You are using latest Anchor with avm installed and Solana CLI latest version. 
   The project is scaffolded using \`anchor init app\` (you can rename the project depending on the contract’s purpose).
-  whenever you use commands make sure to cd into app first.
   IMPORTANT: use yarn as package manager
   IMPORTANT: MAKE SURE THE PUBLIC KEY REMAINS SAME
   IMPORTANT: use different files if necessary and divide the code to make it better if the code is big
   IMPORTANT: Make sure to not have syntax errors and make sure to send commands to install external package.
+  IMPORTANT: DO NOT SEND anchor build command at the end.
   </framework_info>
 
 <current_files>

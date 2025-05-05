@@ -18,7 +18,7 @@ export const Header = ({ children, className, onClick }: {
                 className="[&_svg:not([class*='size-'])]:size-5 cursor-pointer"
             />
             <Link href="/">
-                <Image src="/logo.svg" alt="logo" width={25} height={25} />
+                <img src="/logo.svg" alt="Lana Ai" width={40} height={40} />
             </Link>
             {children && <Button
                 variant="link"

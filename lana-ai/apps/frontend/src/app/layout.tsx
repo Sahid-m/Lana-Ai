@@ -16,7 +16,7 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "NAME_OF_APP",
+  title: "Lana Ai",
   description: "An App that allows you to create solana smart contract using natural language and deploy them"
 };
 

@@ -43,6 +43,7 @@ RUN source ~/.bashrc
 RUN export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH" && solana-keygen new --no-bip39-passphrase
 
 RUN source ~/.bashrc
+RUN source ~/.bashrc
 
 WORKDIR /tmp/ext
 

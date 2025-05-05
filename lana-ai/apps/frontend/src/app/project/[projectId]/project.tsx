@@ -69,6 +69,8 @@ export const Project: React.FC<{ projectId: string, sessionUrl: string, previewU
                                         ))}
                                     </div>
                                 ))}
+
+
                             </div>
                         </div>
                     </div>
@@ -100,15 +102,15 @@ export const Project: React.FC<{ projectId: string, sessionUrl: string, previewU
                         <Button variant={tab === "preview" ? "default" : "outline"} onClick={() => setTab("preview")}>Preview</Button>
                         <Button variant="outline" onClick={() => setTab("split")}>Split</Button>
                     </div>
-                    <div className="flex gap-2 h-full">
-                        <div className={`${tab === "code" ? "left-0 flex-1" : tab === "split" ? "left-0 flex-1" : "left-full flex-0"} position-absolute transition-all duration-300 h-full w-full`}>
+                    <div className="flex gap-2 h-full relative">
+                        <div className={`${tab === "code" ? "left-0 flex-1" : tab === "split" ? "left-0 flex-1" : "left-full flex-0"} absolute transition-all duration-300 top-0 bottom-4 w-full`}>
                             <iframe
                                 src={`${sessionUrl}/`}
                                 className="w-full h-full rounded-lg"
                                 title="Project Worker"
                             />
                         </div>
-                        <div className={`${tab === "preview" ? "left-0 flex-1" : tab === "split" ? "left-0 flex-1" : "left-full flex-0"} position-absolute transition-all duration-300 h-full w-full`}>
+                        <div className={`${tab === "preview" ? "left-0 flex-1" : tab === "split" ? "left-0 flex-1" : "left-full flex-0"} absolute transition-all duration-300 h-full w-full`}>
                             {/* <PreviewIframe url={`${previewUrl}/`} /> */}
                             <h1>Preview Unavaible</h1>
                         </div>
