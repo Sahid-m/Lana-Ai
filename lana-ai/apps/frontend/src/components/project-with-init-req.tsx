@@ -8,7 +8,6 @@ import { useEffect } from "react";
 export default function ProjectWithInitRequest({
     projectId,
     sessionUrl,
-    previewUrl,
     workerUrl
 }: {
     projectId: string,
@@ -23,19 +22,22 @@ export default function ProjectWithInitRequest({
 
     useEffect(() => {
         (async () => {
-            const token = await getToken();
-            axios.post(
-                `${workerUrl}/prompt`,
-                {
-                    projectId: projectId,
-                    prompt: initPrompt,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+            if (initPrompt) {
+                const token = await getToken();
+                axios.post(
+                    `${workerUrl}/prompt`,
+                    {
+                        projectId: projectId,
+                        prompt: initPrompt,
                     },
-                },
-            );
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                );
+            }
+
             // window.location.href = `/project/${projectId}`;
         })()
     }, [projectId, initPrompt, workerUrl, getToken, router]);

@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { itemVariants } from '@/lib/animation-variants'
 import { cn } from '@/lib/utils'
+import { Sparkles } from 'lucide-react'
 import { motion } from 'motion/react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { SidebarTrigger } from './ui/sidebar'
 
@@ -17,8 +17,13 @@ export const Header = ({ children, className, onClick }: {
                 variant="link"
                 className="[&_svg:not([class*='size-'])]:size-5 cursor-pointer"
             />
-            <Link href="/">
-                <img src="/logo.svg" alt="Lana Ai" width={40} height={40} />
+            <Link href="/" className="flex items-center gap-2 group">
+                <div className="flex items-center justify-center size-8 rounded-full bg-teal-500/10 group-hover:bg-teal-500/20 transition-all duration-200">
+                    <Sparkles className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                </div>
+                <span className="font-semibold text-lg bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-teal-200 bg-clip-text text-transparent">
+                    Lana AI
+                </span>
             </Link>
             {children && <Button
                 variant="link"

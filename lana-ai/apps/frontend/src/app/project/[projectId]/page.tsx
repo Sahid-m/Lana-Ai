@@ -1,6 +1,5 @@
 import ProjectWithInitRequest from "@/components/project-with-init-req";
 import { DOCKER_URL, WORKER_URL } from "@/config";
-import axios from "axios";
 
 interface Params {
     params: Promise<{ projectId: string }>
