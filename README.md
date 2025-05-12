@@ -13,6 +13,11 @@ Key Features:
 - **Running Commands:** You can run commands just as you would on your local machine to interact with the code.
 - **Context-Aware:** The AI is pre-configured with context for an Anchor project (a framework for Solana), making it easier to generate contract code specifically for Solana.
 
+### Screenshots
+1. ![image](https://github.com/user-attachments/assets/2f4d55b5-dab6-41e5-a2a0-3ef36923182e)
+2. ![image](https://github.com/user-attachments/assets/991970b0-e0f7-49a2-b19d-8bf22ddda73b)
+
+
 ### ⚡ **Current Status**
 
 - **Platform Features:** MVP (Minimal Viable Product) with capabilities like reprompting, debugging, and creating contracts in response to natural language.
