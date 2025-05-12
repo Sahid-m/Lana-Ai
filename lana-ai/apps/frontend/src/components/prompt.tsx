@@ -3,7 +3,7 @@
 import { BACKEND_URL } from "@/config";
 import { containerVariants, itemVariants } from "@/lib/animation-variants";
 import { prompts } from "@/lib/constants";
-import { useAuth } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import { ArrowRight, ChevronRight, Coins, Lock, MessageSquare, MoveUpRight, Sparkles, Wallet } from "lucide-react";
 import { motion } from "motion/react";
@@ -172,7 +172,9 @@ export function Prompt() {
                             Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction className="rounded-full bg-teal-500 hover:bg-teal-600 text-white">
-                            Sign in
+                            <SignInButton>
+                                Sign in
+                            </SignInButton>
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
