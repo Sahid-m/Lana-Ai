@@ -45,16 +45,21 @@ export function Prompt() {
             setIsSignedIn(true);
             return
         }
-        const response = await axios.post(`${BACKEND_URL}/project`, {
-            prompt: prompt,
-            type: type,
-        }, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        })
+        try {
+            const response = await axios.post(`${BACKEND_URL}/project`, {
+                prompt: prompt,
+                type: type,
+            }, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
 
-        router.push(`/project/${response.data.projectId}?initPrompt=${prompt}`);
+            router.push(`/project/${response.data.projectId}?initPrompt=${prompt}`);
+        } catch (e) {
+            alert("Backend Seemed to be down!");
+        }
+
     }
 
     return (
