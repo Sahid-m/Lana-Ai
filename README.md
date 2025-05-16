@@ -1,6 +1,8 @@
 # LANA AI - A Platform to Build, Debug, and Deploy Smart Contracts on Solana Using Natural Language
+![image](https://github.com/user-attachments/assets/4d30cfe1-3e28-40ff-9f76-f3efa1999a2d)
 
 LANA AI is a platform designed to simplify the process of writing, debugging, and deploying smart contracts on the Solana blockchain. The unique feature of this platform is its ability to generate smart contracts using **natural language prompts**.
+
 
 ### 🚀 **How It Works**
 
