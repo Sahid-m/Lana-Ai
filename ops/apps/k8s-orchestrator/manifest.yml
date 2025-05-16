@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-orchestrator
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-orchestrator
+  template:
+    metadata:
+      labels:
+        app: k8s-orchestrator
+    spec:
+      containers:
+        - name: k8s-orchestrator
+          image: 100xdevs/antidevs-k8s-orchestrator:b779937bdfda177a72b28a9a7b5757fe0d37b625
+          ports:
+            - containerPort: 7001
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-url
+                  key: DATABASE_URL
+            - name: REDIS_URL
+              value: redis://redis.app.svc.cluster.local:6379
+          volumeMounts:
+            - name: k8s-config
+              mountPath: /root/.kube/config
+              subPath: config
+      volumes:
+        - name: k8s-config
+          secret:
+            secretName: k8s-config
+            items:
+              - key: KUBECONFIG
+                path: config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-orchestrator
+  namespace: app
+spec:
+  selector:
+    app: k8s-orchestrator
+  ports:
+    - port: 7001
+      targetPort: 7001
+      protocol: TCP

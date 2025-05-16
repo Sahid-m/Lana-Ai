@@ -33,10 +33,10 @@ docker run -p 5432:5432 -d -e POSTGRES_PASSWORD=mysupersecretpassword postgres
 
 #### 2. **Build New Coder Server Docker Image**
 
-Build the Docker image for the code server from the provided Dockerfile:
+Build the Docker image for the code server from the provided Dockerfile (go into lana-ai folder before):
 
 ```bash
-sudo docker build -f docker/dockerfile.newcoder -t code-server-new .
+sudo docker build -f docker/Dockerfile.code-server -t code-server .
 ```
 
 #### 3. **Run the Code Server Docker Container**
@@ -44,12 +44,40 @@ sudo docker build -f docker/dockerfile.newcoder -t code-server-new .
 Run the newly built Docker image for the code server:
 
 ```bash
-sudo docker run -it --add-host=host.docker.internal:host-gateway -p 8080:8080 new-code-server
+sudo docker run -d --add-host=host.docker.internal:host-gateway -p 8080:8080 new-code-server
 ```
 
-#### 4. **Run the Apps**
+#### 4. **Fill up your env file in frontend,worker,db,common folder**
 
-You can run the application either directly from Docker or by navigating to the corresponding folders and executing the relevant commands.
+#### 5. **Migrate The Database and Generate Client**
+
+```bash
+bun install
+```
+
+```bash
+bun run db:migrate && bun run db:generate
+```
+
+#### 6. **Run Backend and Frontend**
+
+```bash
+bun run primary-backend
+```
+
+```bash
+bun run ws-relayer
+```
+
+```bash
+bun run worker
+```
+
+```bash
+bun run frontend
+```
+
+#### Now Go to http://localhost:3000/
 
 ### 📝 **Contributing**
 
@@ -57,7 +85,8 @@ This project is currently under active development by a second-year student, and
 
 ---
 
-### DEMO YT : 
+### DEMO YT :
+
 https://youtu.be/Qq45dWmVpmU
 
 ### Screenshots

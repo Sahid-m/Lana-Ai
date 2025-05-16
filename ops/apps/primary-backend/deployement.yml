@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: primary-backend
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: primary-backend
+  template:
+    metadata:
+      labels:
+        app: primary-backend
+    spec:
+      containers:
+        - name: primary-backend
+          image: 100xdevs/antidevs-primary-backend:7eab897aab7517fde2625afe89e265e175f9b678
+          ports:
+            - containerPort: 9090
+          env:
+            - name: JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: primary-backend-secret
+                  key: JWT_PUBLIC_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: primary-backend-secret
+                  key: DATABASE_URL
