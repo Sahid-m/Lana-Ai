@@ -85,13 +85,16 @@ This project is currently under active development by a second-year student, and
 
 ---
 
-### DEMO YT :
-
-https://youtu.be/Qq45dWmVpmU
 
 ### Screenshots
 
 1. ![image](https://github.com/user-attachments/assets/2f4d55b5-dab6-41e5-a2a0-3ef36923182e)
 2. ![image](https://github.com/user-attachments/assets/991970b0-e0f7-49a2-b19d-8bf22ddda73b)
+
+### DEMO YT :
+
+[![Demo](https://img.youtube.com/vi/Qq45dWmVpmU/0.jpg)](https://youtu.be/Qq45dWmVpmU)
+
+
 
 **Enjoy building with LANA AI!** 🚀
